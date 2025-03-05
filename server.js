@@ -5,10 +5,16 @@ const bodyParser = require("body-parser");
 require("dotenv").config(); // Load environment variables
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
 const PORT = 5000;
+const frontendURL = "https://portfolio-kappa-nine-87.vercel.app"; // Ensure correct frontend URL
+
+// Middleware
+app.use(cors({
+    origin: frontendURL,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+}));
+app.use(bodyParser.json());
 
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
@@ -39,9 +45,12 @@ app.post("/send", async (req, res) => {
     }
 });
 
+// Test API Endpoint
+app.get("/api/data", (req, res) => {
+    res.json({ message: "Hello from Backend!", data: [1, 2, 3] });
+});
+
 // Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
-
-
