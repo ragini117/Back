@@ -2,17 +2,18 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-require("dotenv").config(); // Load environment variables
+require("dotenv").config();
 
 const app = express();
-const PORT = 5000;
-const frontendURL = "https://portfolio-kappa-nine-87.vercel.app"; // Ensure correct frontend URL
+const PORT = process.env.PORT || 5000;
+const frontendURL = "https://portfolio-kappa-nine-87.vercel.app";
 
 // Middleware
 app.use(cors({
     origin: frontendURL,
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
+    credentials: true,
 }));
 app.use(bodyParser.json());
 
@@ -20,8 +21,8 @@ app.use(bodyParser.json());
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: process.env.EMAIL, // Your Gmail
-        pass: process.env.PASSWORD, // Your Gmail App Password
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD, // Ensure App Password is used if 2FA is enabled
     },
 });
 
@@ -31,7 +32,7 @@ app.post("/send", async (req, res) => {
 
     const mailOptions = {
         from: email,
-        to: process.env.EMAIL, // Your email to receive messages
+        to: process.env.EMAIL,
         subject: subject || `New Message from ${name}`,
         text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     };
@@ -51,6 +52,6 @@ app.get("/api/data", (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
